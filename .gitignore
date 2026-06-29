@@ -1,3 +1,4 @@
 /target
 cas.s
 tas.s
+*.o
