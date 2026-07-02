@@ -4,3 +4,4 @@ all:
 	gcc -c tas.c
 	gcc -c good_mutex.c
 	gcc -c spinlock.c
+	gcc -c spinlock2.c
