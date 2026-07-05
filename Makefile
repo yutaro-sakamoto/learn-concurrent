@@ -7,3 +7,4 @@ all:
 	gcc -c spinlock2.c
 	gcc -c spinlock3.c
 	gcc pthread_mutex_example.c
+	gcc -c semaphore.c
