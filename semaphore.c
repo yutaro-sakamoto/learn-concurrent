@@ -13,3 +13,13 @@ void semaphore_acquire(volatile int *cnt) {
 void semaphore_release(int *cnt) {
     __sync_fetch_and_sub(cnt, 1);
 }
+
+int cnt = 0;
+
+void some_func() {
+    for(;;) {
+        semaphore_acquire(&cnt);
+        // process data
+        semaphore_release(&cnt);
+    }
+}
