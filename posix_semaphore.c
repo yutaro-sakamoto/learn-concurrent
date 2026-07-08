@@ -27,4 +27,6 @@ void* th(void* arg) {
 
     __sync_fetch_and_add(&count, 1);
     printf("count = %d");
+
+    usleep(100000);
 }
