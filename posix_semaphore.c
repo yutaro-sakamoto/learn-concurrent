@@ -29,4 +29,11 @@ void* th(void* arg) {
     printf("count = %d");
 
     usleep(100000);
+
+    __sync_fetch_and_sub(&count, 1);
+
+    if(sem_post(s) == -1) {
+        perror("sem_post");
+        exit(1);
+    }
 }
