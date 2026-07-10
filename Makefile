@@ -8,3 +8,4 @@ all:
 	gcc -c spinlock3.c
 	gcc pthread_mutex_example.c
 	gcc -c semaphore.c
+	gcc posix_semaphore.c

@@ -36,4 +36,37 @@ void* th(void* arg) {
         perror("sem_post");
         exit(1);
     }
+
+    if(sem_close(s) == -1) {
+        perror("sem_close");
+    }
+
+    return NULL;
+}
+
+int main(int argc, char *argv[]) {
+    sem_t *s = sem_open("/mysemaphore", O_CREAT, 0660, 3);
+    if(s == SEM_FAILED) {
+        perror("sem_open");
+        return 1;
+    }
+
+    pthread_t v[NUM_THREADS];
+    for(int i=0; i<NUM_THREADS; i++) {
+        pthread_create(&v[i], NULL, th, NULL);
+    }
+
+    for(int i=0; i<NUM_THREADS; i++) {
+        pthread_join(v[i], NULL);
+    }
+
+    if(sem_close(s) == -1) {
+        perror("sem_close");
+    }
+
+    if(sem_unlink("/mysemaphore") == -1) {
+        perror("sem_unlink");
+    }
+
+    return 0;
 }
