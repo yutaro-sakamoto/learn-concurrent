@@ -9,3 +9,4 @@ all:
 	gcc pthread_mutex_example.c
 	gcc -c semaphore.c
 	gcc posix_semaphore.c
+	gcc pthread_cond.c
