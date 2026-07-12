@@ -10,3 +10,4 @@ all:
 	gcc -c semaphore.c
 	gcc posix_semaphore.c
 	gcc pthread_cond.c
+	gcc barrier.c
