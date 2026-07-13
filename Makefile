@@ -11,3 +11,4 @@ all:
 	gcc posix_semaphore.c
 	gcc pthread_cond.c
 	gcc barrier.c
+	gcc -c spin_rw_lock.c
