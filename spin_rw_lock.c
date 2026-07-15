@@ -29,3 +29,23 @@ void rwlock_write_release(bool *lock, int *wcnt) {
     spinlock_release2(lock);
     __sync_fetch_and_sub(wcnt, 1);
 }
+
+int rcnt = 0;
+int wcnt = 0;
+bool lock = false;
+
+void reader() {
+    for(;;) {
+        rwlock_read_acquire(&rcnt, &wcnt);
+        // a critical section
+        rwlock_read_release(&rcnt);
+    }
+}
+
+void writer() {
+    for(;;) {
+        rwlock_write_acquire(&lock, &rcnt, &wcnt);
+        // critical section
+        rwlock_write_release(&lock, &wcnt);
+    }
+}
