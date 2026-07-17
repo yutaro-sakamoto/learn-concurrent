@@ -14,3 +14,4 @@ all:
 	gcc -c spin_rw_lock.c
 	gcc -c pthread_barrier.c
 	gcc pthread_rw_lock.c
+	gcc benchmark_rw_lock.c
