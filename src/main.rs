@@ -1,4 +1,4 @@
-use std::sync::{Arc, Condvar, Mutex, RwLock};
+use std::sync::{Arc, Barrier, Condvar, Mutex, RwLock};
 use std::thread;
 
 fn some_func(lock: Arc<Mutex<u64>>) {
@@ -56,18 +56,36 @@ fn parent(p: Arc<(Mutex<bool>, Condvar)>) {
 //    p.join().unwrap();
 //}
 
+//fn main() {
+//    let lock = RwLock::new(10);
+//    {
+//        let v1 = lock.read().unwrap();
+//        let v2 = lock.read().unwrap();
+//        println!("v1 = {}", v1);
+//        println!("v2 = {}", v2);
+//    }
+//
+//    {
+//        let mut v = lock.write().unwrap();
+//        *v = 7;
+//        println!("v = {}", v);
+//    }
+//}
+
 fn main() {
-    let lock = RwLock::new(10);
-    {
-        let v1 = lock.read().unwrap();
-        let v2 = lock.read().unwrap();
-        println!("v1 = {}", v1);
-        println!("v2 = {}", v2);
+    let mut v = Vec::new();
+    let barrier = Arc::new(Barrier::new(10));
+
+    for _ in 0..10 {
+        let b = barrier.clone();
+        let th = thread::spawn(move || {
+            b.wait();
+            println!("finished barrier");
+        });
+        v.push(th);
     }
 
-    {
-        let mut v = lock.write().unwrap();
-        *v = 7;
-        println!("v = {}", v);
+    for th in v {
+        th.join().unwrap();
     }
 }
