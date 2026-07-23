@@ -1,3 +1,4 @@
+use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Barrier, Condvar, Mutex, RwLock};
 use std::thread;
 
@@ -71,24 +72,24 @@ fn parent(p: Arc<(Mutex<bool>, Condvar)>) {
 //        println!("v = {}", v);
 //    }
 //}
-
-fn main() {
-    let mut v = Vec::new();
-    let barrier = Arc::new(Barrier::new(10));
-
-    for _ in 0..10 {
-        let b = barrier.clone();
-        let th = thread::spawn(move || {
-            b.wait();
-            println!("finished barrier");
-        });
-        v.push(th);
-    }
-
-    for th in v {
-        th.join().unwrap();
-    }
-}
+//
+//fn main() {
+//    let mut v = Vec::new();
+//    let barrier = Arc::new(Barrier::new(10));
+//
+//    for _ in 0..10 {
+//        let b = barrier.clone();
+//        let th = thread::spawn(move || {
+//            b.wait();
+//            println!("finished barrier");
+//        });
+//        v.push(th);
+//    }
+//
+//    for th in v {
+//        th.join().unwrap();
+//    }
+//}
 
 pub struct Semaphore {
     mutex: Mutex<isize>,
@@ -119,5 +120,34 @@ impl Semaphore {
         if *cnt <= self.max {
             self.cond.notify_one();
         }
+    }
+}
+
+const NUM_LOOP: usize = 100000;
+const NUM_THREADS: usize = 8;
+const SEM_NUM: isize = 4;
+
+static CNT: AtomicUsize = AtomicUsize::new(0);
+
+fn main() {
+    let mut v = Vec::new();
+    let sem = Arc::new(Semaphore::new(SEM_NUM));
+
+    for i in 0..NUM_THREADS {
+        let s = sem.clone();
+        let t = std::thread::spawn(move || {
+            for _ in 0..NUM_LOOP {
+                s.wait();
+
+                CNT.fetch_add(1, Ordering::SeqCst);
+                let n = CNT.load(Ordering::SeqCst);
+                println!("semaphore: i = {}, CNT = {}", i, n);
+                assert!((n as isize) <= SEM_NUM);
+                CNT.fetch_sub(1, Ordering::SeqCst);
+
+                s.post();
+            }
+        });
+        v.push(t);
     }
 }
